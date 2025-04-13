@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nicolas Fecko | Computer Science & Innovation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* Base Styles */
+  :root {
+    --background: #000000;
+    --foreground: #ffffff;
+    --card: #0a0a0a;
+    --card-foreground: #ffffff;
+    --primary: #00ff8c;
+    --primary-foreground: #000000;
+    --secondary: #1e1e20;
+    --secondary-foreground: #ffffff;
+    --muted: #1e1e20;
+    --muted-foreground: #a6a6a6;
+    --accent: #00ff8c;
+    --accent-foreground: #000000;
+    --destructive: #ff0000;
+    --destructive-foreground: #ffffff;
+    --border: #333333;
+    --input: #333333;
+    --ring: #00ff8c;
+    --radius: 0.5rem;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-mono);
+    background-color: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+    position: relative;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  ul {
+    list-style: none;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .main {
+    flex: 1;
+    padding: 2rem 1rem;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Grid Pattern Background */
+  .grid-pattern {
+    position: fixed;
+    inset: 0;
+    background-image: linear-gradient(to right, rgba(0, 255, 140, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0, 255, 140, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Header & Navigation */
+  .header {
+    border-bottom: 1px solid rgba(51, 51, 51, 0.4);
+    backdrop-filter: blur(4px);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0;
+  }
+
+  .logo {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--primary);
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-links li {
+    margin-left: 2rem;
+  }
+
+  .nav-links a {
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--primary);
+  }
+
+  .mobile-menu-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: var(--foreground);
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    position: relative;
+  }
+
+  .menu-icon,
+  .menu-icon::before,
+  .menu-icon::after {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--foreground);
+    position: absolute;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .menu-icon {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .menu-icon::before,
+  .menu-icon::after {
+    content: '';
+  }
+
+  .menu-icon::before {
+    top: -8px;
+  }
+
+  .menu-icon::after {
+    bottom: -8px;
+  }
+
+  .mobile-menu-open .menu-icon {
+    background-color: transparent;
+  }
+
+  .mobile-menu-open .menu-icon::before {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .mobile-menu-open .menu-icon::after {
+    transform: rotate(-45deg) translate(5px, -5px);
+  }
+
+  .mobile-menu-open .nav-links {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--background);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem;
+  }
+
+  .mobile-menu-open .nav-links li {
+    margin: 1rem 0;
+  }
+
+  @media (min-width: 768px) {
+    .mobile-menu-btn {
+      display: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  /* Terminal */
+  .terminal,
+  .terminal-window {
+    border: 1px solid rgba(0, 255, 140, 0.5);
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 4px;
+    padding: 1rem;
+    position: relative;
+  }
+
+  .terminal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 255, 140, 0.3);
+  }
+
+  .terminal-button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+
+  .terminal-button-red {
+    background-color: #ff5f56;
+  }
+
+  .terminal-button-yellow {
+    background-color: #ffbd2e;
+  }
+
+  .terminal-button-green {
+    background-color: #27c93f;
+  }
+
+  .terminal-title {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .terminal-content {
+    font-family: var(--font-mono);
+    line-height: 1.5;
+  }
+
+  .terminal-prompt {
+    color: var(--primary);
+  }
+
+  .command-prompt::before {
+    content: "$ ";
+    color: var(--primary);
+  }
+
+  .terminal-cursor {
+    display: inline-block;
+    width: 10px;
+    height: 1.2em;
+    background-color: var(--primary);
+    animation: blink 1s step-end infinite;
+    vertical-align: text-bottom;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* Glitch Effect */
+  .glitch {
+    position: relative;
+    color: white;
+    font-weight: bold;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+
+  .glitch::before {
+    color: var(--primary);
+    z-index: -1;
+  }
+
+  .glitch::after {
+    color: #ff00ff;
+    z-index: -2;
+  }
+
+  .glitch:hover::before {
+    animation: glitch-animation 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+    opacity: 1;
+  }
+
+  .glitch:hover::after {
+    animation: glitch-animation 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) reverse both infinite;
+    opacity: 1;
+  }
+
+  @keyframes glitch-animation {
+    0% {
+      transform: translate(0);
+    }
+    20% {
+      transform: translate(-2px, 2px);
+    }
+    40% {
+      transform: translate(-2px, -2px);
+    }
+    60% {
+      transform: translate(2px, 2px);
+    }
+    80% {
+      transform: translate(2px, -2px);
+    }
+    100% {
+      transform: translate(0);
+    }
+  }
+
+  /* Sections */
+  section {
+    margin-bottom: 4rem;
+  }
+
+  .page-section {
+    display: none;
+  }
+
+  .page-section.active {
+    display: block;
+  }
+
+  .hero-section {
+    padding: 3rem 0;
+    text-align: center;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .view-all {
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: text-decoration 0.3s;
+  }
+
+  .view-all:hover {
+    text-decoration: underline;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .btn-outline {
+    background-color: rgba(0, 255, 140, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(0, 255, 140, 0.3);
+  }
+
+  .btn-outline:hover {
+    background-color: rgba(0, 255, 140, 0.2);
+  }
+
+  .cta-button {
+    margin-top: 2rem;
+  }
+
+  /* Projects */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .project-card {
+    background-color: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 255, 140, 0.2);
+  }
+
+  .project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 255, 140, 0.2);
+    border: 1px solid rgba(0, 255, 140, 0.6);
+  }
+
+  .project-image {
+    position: relative;
+    height: 12rem;
+  }
+
+  .project-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+  }
+
+  .project-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    font-size: 1.125rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  .project-content {
+    padding: 1rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-description {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+    margin-bottom: 1rem;
+    flex: 1;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    border-radius: 0.25rem;
+  }
+
+  /* Skills */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .skill-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Filter buttons */
+  .filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 2rem 0;
+  }
+
+  .filter-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: var(--radius);
+    background-color: var(--secondary);
+    color: var(--secondary-foreground);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .filter-button:hover {
+    background-color: rgba(30, 30, 32, 0.8);
+  }
+
+  .filter-button.active {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  /* Blog */
+  .blog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .blog-card {
+    background-color: var(--card);
+    padding: 1rem;
+    border-radius: var(--radius);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 255, 140, 0.2);
+  }
+
+  .blog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 255, 140, 0.2);
+    border: 1px solid rgba(0, 255, 140, 0.6);
+  }
+
+  .blog-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--muted-foreground);
+    margin-bottom: 0.5rem;
+  }
+
+  .blog-date,
+  .blog-time {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .blog-title {
+    font-size: 1.125rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+
+  .blog-excerpt {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  /* About Page */
+  .experience-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--foreground);
+    font-family: var(--font-mono);
+  }
+
+  .form-textarea {
+    min-height: 6rem;
+    resize: vertical;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.3s;
+  }
+
+  .contact-link:hover {
+    color: var(--primary);
+  }
+
+  .contact-link-label {
+    color: var(--primary);
+    margin-bottom: 0.25rem;
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid rgba(51, 51, 51, 0.4);
+    padding: 1.5rem 0;
+  }
+
+  .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .footer-copyright {
+    font-size: 0.875rem;
+    color: var(--muted-foreground);
+  }
+
+  .footer-social {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .social-link {
+    color: var(--muted-foreground);
+    transition: color 0.3s;
+  }
+
+  .social-link:hover {
+    color: var(--primary);
+  }
+
+  /* Margin and padding utilities */
+  .mb-4 {
+    margin-bottom: 1rem;
+  }
+
+  .mt-4 {
+    margin-top: 1rem;
+  }
+
+  .mt-16 {
+    margin-top: 4rem;
+  }
+
+  .mb-6 {
+    margin-bottom: 1.5rem;
+  }
+
+  /* Responsive */
+  @media (min-width: 768px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .blog-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .skills-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .footer-content {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    
+    .contact-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .projects-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .skills-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>
+</head>
+<body>
+<div class="grid-pattern"></div>
+
+<header class="header">
+  <div class="container">
+    <nav class="nav">
+      <a href="#home" class="logo glitch" data-text="NICOLAS_FECKO">NICOLAS_FECKO</a>
+      
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <span class="menu-icon"></span>
+      </button>
+      
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#home" class="command-prompt nav-link active" data-page="home">home</a></li>
+        <li><a href="#projects" class="command-prompt nav-link" data-page="projects">projects</a></li>
+        <li><a href="#skills" class="command-prompt nav-link" data-page="skills">skills</a></li>
+        <li><a href="#blog" class="command-prompt nav-link" data-page="blog">blog</a></li>
+        <li><a href="#about" class="command-prompt nav-link" data-page="about">about</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main class="main container">
+  <!-- Home Page -->
+  <section id="home" class="page-section active">
+    <div class="hero-section">
+      <div class="terminal" id="introTerminal">
+        <div class="terminal-header">
+          <div class="terminal-button terminal-button-red"></div>
+          <div class="terminal-button terminal-button-yellow"></div>
+          <div class="terminal-button terminal-button-green"></div>
+          <div class="terminal-title">terminal</div>
+        </div>
+        <div class="terminal-content">
+          <span class="terminal-prompt">$ </span>
+          <span id="typingText"></span>
+          <span class="terminal-cursor"></span>
+        </div>
+      </div>
+      
+      <div class="cta-button" id="ctaButton" style="display: none;">
+        <a href="#about" class="btn btn-outline nav-link" data-page="about">
+          Learn more about me
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </div>
+    </div>
+    
+    <section class="projects-section">
+      <div class="section-header">
+        <h2 class="section-title">Featured Projects</h2>
+        <a href="#projects" class="view-all nav-link" data-page="projects">
+          View all
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </div>
+      
+      <div class="projects-grid">
+        <div class="project-card">
+          <div class="project-image">
+            <img src="EDH.jpg" alt="Everyday Human App">
+            <div class="project-overlay"></div>
+            <h3 class="project-title glitch" data-text="Everyday Human App">Everyday Human App</h3>
+          </div>
+          <div class="project-content">
+            <p class="project-description">A mobile application designed to enhance daily productivity and well-being through personalized routines and habit tracking.</p>
+            <div class="project-tags">
+              <span class="tag">Mobile Development</span>
+              <span class="tag">UI/UX</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-image">
+            <img src="RoboCup.jpg" alt="RoboCup Competition">
+            <div class="project-overlay"></div>
+            <h3 class="project-title glitch" data-text="RoboCup Competition">RoboCup Competition</h3>
+          </div>
+          <div class="project-content">
+            <p class="project-description">Participation in international robotics competitions, developing autonomous robots capable of playing soccer and performing rescue operations.</p>
+            <div class="project-tags">
+              <span class="tag">Robotics</span>
+              <span class="tag">AI</span>
+              <span class="tag">Computer Vision</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="project-card">
+          <div class="project-image">
+            <img src="Visegrad.jpg" alt="Visegrad Spaceflight Analog Challenge">
+            <div class="project-overlay"></div>
+            <h3 class="project-title glitch" data-text="Visegrad Spaceflight Analog Challenge">Visegrad Spaceflight Analog Challenge</h3>
+          </div>
+          <div class="project-content">
+            <p class="project-description">Participating in a simulated space mission to develop technologies and protocols for future space exploration and habitation.</p>
+            <div class="project-tags">
+              <span class="tag">Space Technology</span>
+              <span class="tag">Innovation</span>
+              <span class="tag">Research</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="skills-section">
+      <div class="section-header">
+        <h2 class="section-title">Skills & Interests</h2>
+        <a href="#skills" class="view-all nav-link" data-page="skills">
+          View all
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </div>
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-button terminal-button-red"></div>
+          <div class="terminal-button terminal-button-yellow"></div>
+          <div class="terminal-button terminal-button-green"></div>
+          <div class="terminal-title">skills.sh</div>
+        </div>
+        <div class="terminal-content">
+          <div class="skills-grid">
+            <div class="skill-item">
+              <span class="terminal-prompt">$</span>
+              <span>Python</span>
+            </div>
+            <div class="skill-item">
+              <span class="terminal-prompt">$</span>
+              <span>C++</span>
+            </div>
+            <div class="skill-item">
+              <span class="terminal-prompt">$</span>
+              <span>Android Development</span>
+            </div>
+            <div class="skill-item">
+              <span class="terminal-prompt">$</span>
+              <span>Cybersecurity</span>
+            </div>
+            <div class="skill-item">
+              <span class="terminal-prompt">$</span>
+              <span>AI & ML</span>
+            </div>
+            <div class="skill-item">
+              <span class="terminal-prompt">$</span>
+              <span>Robotics</span>
+            </div>
+            <div class="skill-item">
+              <span class="terminal-prompt">$</span>
+              <span>Trading</span>
+            </div>
+            <div class="skill-item">
+              <span class="terminal-prompt">$</span>
+              <span>Digital Marketing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="blog-section">
+      <div class="section-header">
+        <h2 class="section-title">Latest Updates</h2>
+        <a href="#blog" class="view-all nav-link" data-page="blog">
+          View all
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </a>
+      </div>
+      
+      <div class="blog-grid">
+        <div class="blog-card">
+          <div class="blog-meta">
+            <div class="blog-date">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+              2024-04-08
+            </div>
+            <div class="blog-time">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              5 min read
+            </div>
+          </div>
+          <h3 class="blog-title glitch" data-text="Advancements in AI and Robotics">Advancements in AI and Robotics</h3>
+          <p class="blog-excerpt">Exploring the latest developments in artificial intelligence and robotics, and how they're shaping the future of technology.</p>
+        </div>
+      </div>
+    </section>
+  </section>
+  
+  <!-- Projects Page -->
+  <section id="projects" class="page-section">
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-button terminal-button-red"></div>
+        <div class="terminal-button terminal-button-yellow"></div>
+        <div class="terminal-button terminal-button-green"></div>
+        <div class="terminal-title">projects.sh</div>
+      </div>
+      <div class="terminal-content">
+        <p class="mb-4">
+          <span class="terminal-prompt">$</span> Displaying projects directory. Select category to filter results.
+        </p>
+      </div>
+    </div>
+    
+    <div class="filter-container">
+      <button class="filter-button active" data-filter="all">All Projects</button>
+      <button class="filter-button" data-filter="app">Mobile Apps and Books</button>
+      <button class="filter-button" data-filter="robotics">Robotics</button>
+      <button class="filter-button" data-filter="space">Space Tech</button>
+      <button class="filter-button" data-filter="ai">AI & ML</button>
+      <button class="filter-button" data-filter="security">Cybersecurity</button>
+    </div>
+    
+    <div class="projects-grid">
+      <div class="project-card" data-category="app">
+        <div class="project-image">
+          <img src="EDH.jpg" alt="Everyday Human App">
+          <div class="project-overlay"></div>
+          <h3 class="project-title glitch" data-text="Everyday Human App">Everyday Human App</h3>
+        </div>
+        <div class="project-content">
+          <p class="project-description">A mobile application designed to enhance daily productivity and well-being through personalized routines and habit tracking. The app helps users build positive habits and maintain a balanced lifestyle.</p>
+          <div class="project-tags">
+            <span class="tag">Android Development</span>
+            <span class="tag">UI/UX</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="project-card" data-category="robotics">
+        <div class="project-image">
+          <img src="RoboCup.jpg" alt="RoboCup Competition">
+          <div class="project-overlay"></div>
+          <h3 class="project-title glitch" data-text="RoboCup Competition">RoboCup Competition</h3>
+        </div>
+        <div class="project-content">
+          <p class="project-description">Participation in international robotics competitions, developing autonomous robots capable of playing soccer and performing rescue operations. Our team designed and programmed robots to navigate complex environments and make real-time decisions.</p>
+          <div class="project-tags">
+            <span class="tag">Robotics</span>
+            <span class="tag">AI</span>
+            <span class="tag">Computer Vision</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="project-card" data-category="space">
+        <div class="project-image">
+          <img src="Visegrad.jpg" alt="Visegrad Spaceflight Analog Challenge">
+          <div class="project-overlay"></div>
+          <h3 class="project-title glitch" data-text="Visegrad Spaceflight Analog Challenge">Visegrad Spaceflight Analog Challenge</h3>
+        </div>
+        <div class="project-content">
+          <p class="project-description">Participating in a simulated space mission to develop technologies and protocols for future space exploration and habitation. The challenge involved creating sustainable systems for long-duration space missions and addressing the psychological aspects of space travel.</p>
+          <div class="project-tags">
+            <span class="tag">Space Technology</span>
+            <span class="tag">Innovation</span>
+            <span class="tag">Research</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="project-card" data-category="ai">
+        <div class="project-image">
+          <img src="AI.jpg" alt="Machine Learning Research">
+          <div class="project-overlay"></div>
+          <h3 class="project-title glitch" data-text="Machine Learning Research">Machine Learning Research</h3>
+        </div>
+        <div class="project-content">
+          <p class="project-description">Research and implementation of machine learning algorithms for pattern recognition and predictive analytics. The project focused on developing models that can learn from limited datasets and make accurate predictions in real-world scenarios.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">TensorFlow</span>
+            <span class="tag">Data Science</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="project-card" data-category="security">
+        <div class="project-image">
+          <img src="Linux.jpg" alt="Cybersecurity Analysis Tools">
+          <div class="project-overlay"></div>
+          <h3 class="project-title glitch" data-text="Cybersecurity Analysis Tools">Cybersecurity Analysis Tools</h3>
+        </div>
+        <div class="project-content">
+          <p class="project-description">Development of tools for penetration testing and vulnerability assessment to enhance digital security. These tools help identify potential security breaches and provide recommendations for strengthening system defenses.</p>
+          <div class="project-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Network Security</span>
+            <span class="tag">Ethical Hacking</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="project-card" data-category="app">
+        <div class="project-image">
+          <img src="The Legacy of Fecko.jpg" alt="Trading Analytics Platform">
+          <div class="project-overlay"></div>
+          <h3 class="project-title glitch" data-text="Trading Analytics Platform">The Legacy of Fecko</h3>
+        </div>
+        <div class="project-content">
+          <p class="project-description"> A Journey Through Time” explores the origins and evolution of the surname [Your Surname]. Through historical records and family stories, the book traces its roots, shedding light on its cultural and familial significance. This work offers a unique glimpse into the past, connecting generations and providing insight into the rich heritage behind the name.</p>
+          <div class="project-tags">
+            <span class="tag">Book</span>
+            <span class="tag">Data Analysis</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Skills Page -->
+  <section id="skills" class="page-section">
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-button terminal-button-red"></div>
+        <div class="terminal-button terminal-button-yellow"></div>
+        <div class="terminal-button terminal-button-green"></div>
+        <div class="terminal-title">skills_and_interests.sh</div>
+      </div>
+      <div class="terminal-content">
+        <p class="mb-4">
+          <span class="terminal-prompt">$</span> cat /proc/skills_and_interests
+        </p>
+      </div>
+    </div>
+    
+    <div class="mt-4">
+      <h2 class="section-title mb-6">Technical Skills</h2>
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-button terminal-button-red"></div>
+          <div class="terminal-button terminal-button-yellow"></div>
+          <div class="terminal-button terminal-button-green"></div>
+          <div class="terminal-title">technical_skills.sh</div>
+        </div>
+        <div class="terminal-content">
+          <div class="skills-grid">
+            <div>
+              <h3 class="text-primary font-bold">Programming</h3>
+              <ul class="space-y-1">
+                <li><span class="terminal-prompt">-</span> Python</li>
+                <li><span class="terminal-prompt">-</span> C++</li>
+                <li><span class="terminal-prompt">-</span> Android Development</li>
+                <li><span class="terminal-prompt">-</span> Web Development</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-primary font-bold">Cybersecurity</h3>
+              <ul class="space-y-1">
+                <li><span class="terminal-prompt">-</span> Penetration Testing</li>
+                <li><span class="terminal-prompt">-</span> Network Security</li>
+                <li><span class="terminal-prompt">-</span> Vulnerability Assessment</li>
+                <li><span class="terminal-prompt">-</span> Linux operating systems</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-primary font-bold">AI & Robotics</h3>
+              <ul class="space-y-1">
+                <li><span class="terminal-prompt">-</span> Machine Learning</li>
+                <li><span class="terminal-prompt">-</span> Autonomous Robots</li>
+                <li><span class="terminal-prompt">-</span> Robotics Programming</li>
+                <li><span class="terminal-prompt">-</span> Neural Networks</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-primary font-bold">Digital Business</h3>
+              <ul class="space-y-1">
+                <li><span class="terminal-prompt">-</span> Freelancing</li>
+                <li><span class="terminal-prompt">-</span> Digital Marketing</li>
+                <li><span class="terminal-prompt">-</span> Market Analysis</li>
+                <li><span class="terminal-prompt">-</span> Business Development</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mt-16">
+      <h2 class="section-title mb-6">Interests & Focus Areas</h2>
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-button terminal-button-red"></div>
+          <div class="terminal-button terminal-button-yellow"></div>
+          <div class="terminal-button terminal-button-green"></div>
+          <div class="terminal-title">interests.sh</div>
+        </div>
+        <div class="terminal-content">
+          <p class="mb-4">
+            <span class="terminal-prompt">$</span> grep -r "passion" /home/nicolas/interests
+          </p>
+          <div class="mb-4">
+            <p><span class="text-primary">Computer Science:</span> Passionate about leveraging technology for real-world problem-solving, particularly in fields like robotics, AI, and mobile app development.</p>
+          </div>
+          <div class="mb-4">
+            <p><span class="text-primary">Artificial Intelligence:</span> Developing intelligent systems that can learn, reason, and adapt to new situations, with applications in robotics, natural language processing, and computer vision.</p>
+          </div>
+          <div class="mb-4">
+            <p><span class="text-primary">Robotics:</span> Building and programming robots for various applications, from competitive robotics to assistive technologies and industrial automation.</p>
+          </div>
+          <div class="mb-4">
+            <p><span class="text-primary">Cybersecurity:</span> Protecting digital systems and networks from threats, with a focus on ethical hacking, vulnerability assessment, and secure system design.</p>
+          </div>
+          <div class="mb-4">
+            <p><span class="text-primary">Space Technology:</span> Contributing to the advancement of space exploration and habitation through innovative technologies and research.</p>
+          </div>
+          <div class="mb-4">
+            <p><span class="text-primary">Digital Business:</span> Leveraging technology for business growth, with interests in trading, digital marketing, and entrepreneurship.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Blog Page -->
+  <section id="blog" class="page-section">
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-button terminal-button-red"></div>
+        <div class="terminal-button terminal-button-yellow"></div>
+        <div class="terminal-button terminal-button-green"></div>
+        <div class="terminal-title">blog_posts.sh</div>
+      </div>
+      <div class="terminal-content">
+        <p class="mb-4">
+          <span class="terminal-prompt">$</span> ls -la /articles
+        </p>
+      </div>
+    </div>
+    
+    <div class="blog-grid">
+      <div class="blog-card">
+        <div class="blog-meta">
+          <div class="blog-date">
+            <svg xmlns="https://medium.com/@nfecko9/advancements-in-ai-and-robotics-c1d035318a34" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            2024-04-08
+          </div>
+          <div class="blog-time">
+            <svg xmlns="https://medium.com/@nfecko9/advancements-in-ai-and-robotics-c1d035318a34" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            5 min read
+          </div>
+        </div>
+        <h3 class="blog-title glitch" data-text="Advancements in AI and Robotics">Advancements in AI and Robotics</h3>
+        <p class="blog-excerpt">Exploring the latest developments in artificial intelligence and robotics, and how they're shaping the future of technology.</p>
+      </div>
+      
+      <div class="blog-card">
+        <div class="blog-meta">
+          <div class="blog-date">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            2024-03-15
+          </div>
+          <div class="blog-time">
+            <svg xmlns="https://medium.com/@nfecko9" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            7 min read
+          </div>
+        </div>
+        <h3 class="blog-title glitch" data-text="More coming soon">More coming soon</h3>
+        <p class="blog-excerpt">Check out my account to read more</p>
+      </div>
+      
+      <div class="blog-card">
+        <div class="blog-meta">
+          <div class="blog-date">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            2024-02-22
+          </div>
+          <div class="blog-time">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            6 min read
+          </div>
+        </div>
+        <h3 class="blog-title glitch" data-text="The Development Journey of Everyday Human App">The Development Journey of Everyday Human App</h3>
+        <p class="blog-excerpt">Behind the scenes of developing the Everyday Human mobile application, from concept to implementation and user feedback.</p>
+      </div>
+      
+      <div class="blog-card">
+        <div class="blog-meta">
+          <div class="blog-date">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            2024-01-10
+          </div>
+          <div class="blog-time">
+            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            8 min read
+          </div>
+        </div>
+        <h3 class="blog-title glitch" data-text="Cybersecurity in the Age of AI">Cybersecurity in the Age of AI</h3>
+        <p class="blog-excerpt">Examining the evolving landscape of cybersecurity with the rise of artificial intelligence and machine learning technologies.</p>
+      </div>
+    </div>
+  </section>
+  
+  <!-- About Page -->
+  <section id="about" class="page-section">
+  <div class="hero-section">
+    <div class="terminal" id="aboutTerminal">
+      <div class="terminal-header">
+        <div class="terminal-button terminal-button-red"></div>
+        <div class="terminal-button terminal-button-yellow"></div>
+        <div class="terminal-button terminal-button-green"></div>
+        <div class="terminal-title">terminal</div>
+      </div>
+      <div class="terminal-content">
+        <span class="terminal-prompt">$ </span>
+        <span id="aboutTypingText"></span>
+        <span class="terminal-cursor"></span>
+      </div>
+    </div>
+    
+    <div class="cta-button" id="aboutCTAButton" style="display: none;">
+      <a href="#contact" class="btn btn-outline">
+        Get in touch
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+      </a>
+    </div>
+  </div>
+  
+  <div id="aboutBio" style="display: none;" class="terminal-window mt-16">
+    <div class="terminal-header">
+      <div class="terminal-button terminal-button-red"></div>
+      <div class="terminal-button terminal-button-yellow"></div>
+      <div class="terminal-button terminal-button-green"></div>
+      <div class="terminal-title">bio.txt</div>
+    </div>
+    <div class="terminal-content">
+      <p>Hi, I'm Nicolas Fecko, a tech enthusiast and student at SPŠE Prešov. I have a deep passion for AI, robotics, cybersecurity, and digital innovation. My goal is to explore how technology can improve our lives and make the world more efficient and connected.</p>
+      <p class="mt-4">I am constantly learning and growing in these fields, experimenting with new ideas, and striving to combine my technical skills with entrepreneurial pursuits. Whether it's through building AI-powered apps, diving into cybersecurity, or understanding the latest trends in digital business, I'm always looking for ways to innovate and create impactful solutions.</p>
+      <p class="mt-4">I'm driven by curiosity, persistence, and a desire to push the boundaries of what's possible in technology.</p>
+    </div>
+  </div>
+    
+  <section class="mt-16" id="goalsSection" style="display: none;">
+    <h2 class="section-title mb-6">Goals & Vision</h2>
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-button terminal-button-red"></div>
+        <div class="terminal-button terminal-button-yellow"></div>
+        <div class="terminal-button terminal-button-green"></div>
+        <div class="terminal-title">goals.sh</div>
+      </div>
+      <div class="terminal-content">
+        <p class="mb-1">
+          <span class="terminal-prompt">$</span> cat goals.txt
+        </p>
+        <div class="mb-4">
+          <p class="mb-2">My vision is to leverage technology to address real-world challenges and contribute to advancements in fields that I'm passionate about:</p>
+          <ul class="space-y-2">
+            <li><span class="terminal-prompt">-</span> Develop innovative applications that enhance people's daily lives and productivity</li>
+            <li><span class="terminal-prompt">-</span> Contribute to the advancement of robotics and AI technologies</li>
+            <li><span class="terminal-prompt">-</span> Explore the frontiers of space technology and its applications on Earth</li>
+            <li><span class="terminal-prompt">-</span> Promote cybersecurity awareness and develop tools for digital protection</li>
+            <li><span class="terminal-prompt">-</span> Bridge the gap between technology and business to create sustainable ventures</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+    
+  <section class="mt-16" id="contactSection" style="display: none;">
+    <h2 class="section-title mb-6">Contact</h2>
+    <div class="contact-grid">
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-button terminal-button-red"></div>
+          <div class="terminal-button terminal-button-yellow"></div>
+          <div class="terminal-button terminal-button-green"></div>
+          <div class="terminal-title">contact_form.sh</div>
+        </div>
+        <div class="terminal-content">
+          <p class="mb-4">
+            <span class="terminal-prompt">$</span> ./send_message.sh
+          </p>
+          <form class="space-y-4">
+            <div class="form-group">
+              <label for="name" class="form-label">
+                <span class="terminal-prompt">name:</span>
+              </label>
+              <input id="name" type="text" class="form-input" placeholder="Enter your name">
+            </div>
+            <div class="form-group">
+              <label for="email" class="form-label">
+                <span class="terminal-prompt">email:</span>
+              </label>
+              <input id="email" type="email" class="form-input" placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+              <label for="message" class="form-label">
+                <span class="terminal-prompt">message:</span>
+              </label>
+              <textarea id="message" class="form-textarea" placeholder="Enter your message" rows="4"></textarea>
+            </div>
+            <button type="submit" class="btn btn-outline w-full">Send Message</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="terminal-button terminal-button-red"></div>
+          <div class="terminal-button terminal-button-yellow"></div>
+          <div class="terminal-button terminal-button-green"></div>
+          <div class="terminal-title">network_connections.sh</div>
+        </div>
+        <div class="terminal-content">
+          <p class="mb-4">
+            <span class="terminal-prompt">$</span> ifconfig
+          </p>
+          <div class="contact-links">
+            <div>
+              <p class="contact-link-label">github0:</p>
+              <a href="https://github.com/nicolasfecko" class="contact-link" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+                github.com/nicolasfecko
+              </a>
+            </div>
+            <div>
+              <p class="contact-link-label">linkedin0:</p>
+              <a href="https://www.linkedin.com/in/nicolas-fecko-337848295/" class="contact-link" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                linkedin.com/in/nicolasfecko
+              </a>
+            </div>
+            <div>
+              <p class="contact-link-label">mail0:</p>
+              <a href="mailto:nfecko9@gmail.com" class="contact-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                nfecko9@gmail.com
+              </a>
+            </div>
+            <div>
+              <p class="contact-link-label">website0:</p>
+              <a href="https://nicolasfecko.6f.sk" class="contact-link" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                nicolasfecko.6f.sk
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-copyright">
+        <p>&copy; <span id="currentYear"></span> Nicolas Fecko. All rights reserved.</p>
+      </div>
+      <div class="footer-social">
+        <a href="https://github.com/nicolasfecko" class="social-link" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          <span class="sr-only">GitHub</span>
+        </a>
+        <a href="https://www.linkedin.com/in/nicolas-fecko-337848295/" class="social-link" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+          <span class="sr-only">LinkedIn</span>
+        </a>
+        <a href="mailto:nfecko9@gmail.com" class="social-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span class="sr-only">Email</span>
+        </a>
+        <a href="https://nicolasfecko.6f.sk" class="social-link" target="_blank">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+          <span class="sr-only">Website</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu toggle
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const navLinks = document.getElementById('navLinks');
+
+  if (mobileMenuBtn) {
+    mobileMenuBtn.addEventListener('click', () => {
+      document.body.classList.toggle('mobile-menu-open');
+    });
+  }
+
+  // Set current year in footer
+  const currentYearElement = document.getElementById('currentYear');
+  if (currentYearElement) {
+    currentYearElement.textContent = new Date().getFullYear();
+  }
+
+  // Page navigation
+  const navItems = document.querySelectorAll('.nav-link');
+  const pageSections = document.querySelectorAll('.page-section');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      
+      // Remove active class from all nav items
+      navItems.forEach(navItem => navItem.classList.remove('active'));
+      
+      // Add active class to clicked nav item
+      item.classList.add('active');
+      
+      // Get the page ID from data attribute
+      const pageId = item.getAttribute('data-page');
+      
+      // Hide all page sections
+      pageSections.forEach(section => section.classList.remove('active'));
+      
+      // Show the selected page section
+      document.getElementById(pageId).classList.add('active');
+      
+      // Close mobile menu if open
+      document.body.classList.remove('mobile-menu-open');
+      
+      // Scroll to top
+      window.scrollTo(0, 0);
+    });
+  });
+
+  // Terminal typing effect for home page
+  const typingText = document.getElementById('typingText');
+  const ctaButton = document.getElementById('ctaButton');
+  const homeText = "Hello, World. I am Nicolas Fecko. Innovator, developer, and technology enthusiast. Welcome to my digital portfolio.";
+  let homeIndex = 0;
+  let typingSpeed = 40;
+
+  function typeNextCharacter() {
+    if (homeIndex < homeText.length) {
+      typingText.textContent += homeText.charAt(homeIndex);
+      homeIndex++;
+      setTimeout(typeNextCharacter, typingSpeed);
+    } else {
+      // Show CTA button when typing is complete
+      if (ctaButton) {
+        ctaButton.style.display = 'block';
+      }
+    }
+  }
+
+  // Start typing animation if element exists and we're on the home page
+  if (typingText && document.getElementById('home').classList.contains('active')) {
+    setTimeout(typeNextCharacter, 1000);
+  }
+
+  // Terminal typing effect for about page
+  const aboutTypingText = document.getElementById('aboutTypingText');
+  const aboutBio = document.getElementById('aboutBio');
+  const aboutCTAButton = document.getElementById('aboutCTAButton');
+  const goalsSection = document.getElementById('goalsSection');
+  const contactSection = document.getElementById('contactSection');
+  const aboutText = "Hi, I'm Nicolas Fecko. Tech enthusiast, student, and innovator. Welcome to my about page.";
+  let aboutIndex = 0;
+
+  function typeAboutText() {
+    if (aboutIndex < aboutText.length) {
+      aboutTypingText.textContent += aboutText.charAt(aboutIndex);
+      aboutIndex++;
+      setTimeout(typeAboutText, typingSpeed);
+    } else {
+      // Show CTA button when typing is complete
+      if (aboutCTAButton) {
+        aboutCTAButton.style.display = 'block';
+      }
+      
+      // Show bio and other sections when typing is complete
+      setTimeout(() => {
+        if (aboutBio) aboutBio.style.display = 'block';
+        setTimeout(() => {
+          if (goalsSection) goalsSection.style.display = 'block';
+          setTimeout(() => {
+            if (contactSection) contactSection.style.display = 'block';
+          }, 500);
+        }, 500);
+      }, 1000);
+    }
+  }
+
+  // Project filter functionality
+  const filterButtons = document.querySelectorAll('.filter-button');
+  const projectCards = document.querySelectorAll('.project-card');
+
+  if (filterButtons.length > 0) {
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Add active class to clicked button
+        button.classList.add('active');
+        
+        const filter = button.getAttribute('data-filter');
+        
+        // Show/hide projects based on filter
+        projectCards.forEach(card => {
+          if (filter === 'all') {
+            card.style.display = 'flex';
+          } else {
+            const category = card.getAttribute('data-category');
+            if (category === filter) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          }
+        });
+      });
+    });
+  }
+
+  // Handle hash navigation on page load
+  function handleHashNavigation() {
+    const hash = window.location.hash.substring(1) || 'home';
+    const targetNavItem = document.querySelector(`.nav-link[data-page="${hash}"]`);
+    
+    if (targetNavItem) {
+      // Trigger click on the nav item
+      targetNavItem.click();
+      
+      // Start about page typing if navigating to about
+      if (hash === 'about' && aboutTypingText) {
+        setTimeout(typeAboutText, 500);
+      }
+    }
+  }
+
+  // Handle navigation on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    handleHashNavigation();
+    
+    // If no hash, we're on home page, start typing
+    if (!window.location.hash && typingText) {
+      setTimeout(typeNextCharacter, 1000);
+    }
+    
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashNavigation);
+  });
+
+  // Glitch effect on hover
+  const glitchElements = document.querySelectorAll('.glitch');
+
+  glitchElements.forEach(element => {
+    // Make sure data-text attribute is set
+    if (!element.getAttribute('data-text')) {
+      element.setAttribute('data-text', element.textContent);
+    }
+  });
+</script>
+</body>
+</html>
